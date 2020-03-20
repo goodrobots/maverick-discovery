@@ -20,17 +20,23 @@ class MyListener:
     def add_service(self, zeroconf, type, name):
         asyncio.set_event_loop(asyncio.new_event_loop())
         info = zeroconf.get_service_info(type, name)
-        serviceData = {
-            'name': info.name,
-            'server': info.server,
-            'port': info.port,
-            'httpEndpoint': info.properties['httpEndpoint'.encode()].decode(),
-            'wsEndpoint': info.properties['wsEndpoint'.encode()].decode(),
-            'schemaEndpoint': info.properties['schemaEndpoint'.encode()].decode(),
-            'websocketsOnly': info.properties['websocketsOnly'.encode()]
-        }
-        ZeroConfHandler.send_data(serviceData)
-        print("Service {} added, service info: {}".format(name, json.dumps(serviceData)))
+        print(info.properties)
+        try:
+            serviceData = {
+                'name': info.name,
+                'server': info.server,
+                'port': info.port,
+                'httpEndpoint': info.properties['httpEndpoint'.encode()].decode(),
+                'wsEndpoint': info.properties['wsEndpoint'.encode()].decode(),
+                'schemaEndpoint': info.properties['schemaEndpoint'.encode()].decode(),
+                'websocketsOnly': info.properties['websocketsOnly'.encode()],
+                'uuid': info.properties['uuid'.encode()].decode(),
+                'service_type': info.properties['service_type'.encode()].decode(),
+            }
+            ZeroConfHandler.send_data(serviceData)
+            print("Service {} added, service info: {}".format(name, json.dumps(serviceData)))
+        except Exception as e:
+            print("Error sending service info: {}".format(repr(e)))
 
 
 class Application(tornado.web.Application):
