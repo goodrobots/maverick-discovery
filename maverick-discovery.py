@@ -31,7 +31,7 @@ class MyListener:
                     'service_type': info.properties['service_type'.encode()].decode(),
                 }
             except Exception as e:
-                print("Error formatting API service info: {}".format(repr(e)))
+                print("Error formatting API service info: {}".format(repr(e)), flush=True)
         if serviceData:
             ZeroConfHandler.send_data(serviceData)
             ZeroConfHandler.update_cache(serviceData)
@@ -67,23 +67,23 @@ class ZeroConfHandler(tornado.websocket.WebSocketHandler):
     def open(self):
         ZeroConfHandler.waiters.add(self)
         #self.write_message("Hi, client: connection is made ...")
-        print('client connection')
+        print('client connection', flush=True)
         for entry in ZeroConfHandler.cache:
             ZeroConfHandler.send_data(ZeroConfHandler.cache[entry])
-            print("Sending entry to new client: {}".format(entry))
+            print("Sending entry to new client: {}".format(entry), flush=True)
 
     def on_close(self):
         ZeroConfHandler.waiters.remove(self)
-        print("Closing client")
+        print("Closing client", flush=True)
 
     @classmethod
     def send_data(cls, data):
         for waiter in cls.waiters:
             try:
-                print("sending message to {}: {}".format(waiter, data))
+                print("sending message to {}: {}".format(waiter, data), flush=True)
                 waiter.write_message(data)
             except Exception as e:
-                print("Error sending message: {}".format(repr(e)))
+                print("Error sending message: {}".format(repr(e)), flush=True)
 
     @classmethod
     def update_cache(cls, data):
@@ -91,14 +91,14 @@ class ZeroConfHandler(tornado.websocket.WebSocketHandler):
             cls.cache[data['name']] = data
             #if len(cls.cache) > cls.cache_size:
             #    cls.cache = cls.cache[-cls.cache_size :]
-            print("Data added to cache: {}".format(data))
+            print("Data added to cache: {}".format(data), flush=True)
         except Exception as e:
-            print("Error adding to cache: {}".format(repr(e)))
+            print("Error adding to cache: {}".format(repr(e)), flush=True)
 
     @classmethod
     def remove_cache(cls, data):
         del cls.cache[data]
-        print("Deleted {} from cache".format(data))
+        print("Deleted {} from cache".format(data), flush=True)
 
 def main():
     # Setup tornado
