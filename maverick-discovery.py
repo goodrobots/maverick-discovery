@@ -42,7 +42,7 @@ class Application(tornado.web.Application):
         # Setup zeroconf listener
         zeroconf = Zeroconf()
         listener = MyListener()
-        browser = ServiceBrowser(zeroconf, "_http._tcp.local.", listener)
+        browser = ServiceBrowser(zc=zeroconf, type_="_http._tcp.local.", listener=listener)
 
         # Setup websocket handler
         handlers = [(r"/", ZeroConfHandler)]
@@ -74,7 +74,6 @@ class ZeroConfHandler(tornado.websocket.WebSocketHandler):
 
     def on_close(self):
         ZeroConfHandler.waiters.remove(self)
-        self.write_message("Bye client!")
         print("Closing client")
 
     @classmethod
