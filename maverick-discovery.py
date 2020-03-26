@@ -17,11 +17,10 @@ class MyListener:
         info = zeroconf.get_service_info(type, name)
         serviceData = {}
         # First try to format a maverick-api service
-        if 'Maverick API' in info.name:
+        if 'maverick-api' in info.name:
             try:
                 serviceData = {
                     'name': info.name,
-                    'server': info.server,
                     'port': info.port,
                     'httpEndpoint': info.properties['httpEndpoint'.encode()].decode(),
                     'wsEndpoint': info.properties['wsEndpoint'.encode()].decode(),
@@ -32,6 +31,17 @@ class MyListener:
                 }
             except Exception as e:
                 print("Error formatting API service info: {}".format(repr(e)), flush=True)
+        if 'visiond-webrtc' in info.name:
+            try:
+                serviceData = {
+                    'name': info.name,
+                    'port': info.port,
+                    'wsEndpoint': info.properties['wsEndpoint'.encode()].decode(),
+                    'service_type': info.properties['service_type'.encode()].decode(),
+                }
+            except Exception as e:
+                print("Error formatting API service info: {}".format(repr(e)), flush=True)
+
         if serviceData:
             ZeroConfHandler.send_data(serviceData)
             ZeroConfHandler.update_cache(serviceData)
@@ -42,7 +52,8 @@ class Application(tornado.web.Application):
         # Setup zeroconf listener
         zeroconf = Zeroconf()
         listener = MyListener()
-        browser = ServiceBrowser(zc=zeroconf, type_="_http._tcp.local.", listener=listener)
+        browser = ServiceBrowser(zc=zeroconf, type_="_api._tcp.local.", listener=listener)
+        browser = ServiceBrowser(zc=zeroconf, type_="_webrtc._udp.local.", listener=listener)
 
         # Setup websocket handler
         handlers = [(r"/", ZeroConfHandler)]
