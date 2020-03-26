@@ -20,13 +20,14 @@ class MyListener:
         if 'maverick-api' in info.name:
             try:
                 serviceData = {
-                    'name': info.name,
                     'port': info.port,
+                    'name': info.properties['name'.encode()].decode(),
                     'httpEndpoint': info.properties['httpEndpoint'.encode()].decode(),
                     'wsEndpoint': info.properties['wsEndpoint'.encode()].decode(),
                     'schemaEndpoint': info.properties['schemaEndpoint'.encode()].decode(),
                     'websocketsOnly': info.properties['websocketsOnly'.encode()],
                     'uuid': info.properties['uuid'.encode()].decode(),
+                    'service_name': info.name,
                     'service_type': info.properties['service_type'.encode()].decode(),
                 }
             except Exception as e:
@@ -34,9 +35,11 @@ class MyListener:
         if 'visiond-webrtc' in info.name:
             try:
                 serviceData = {
-                    'name': info.name,
                     'port': info.port,
+                    'name': info.properties['name'.encode()].decode(),
                     'wsEndpoint': info.properties['wsEndpoint'.encode()].decode(),
+                    'uuid': info.properties['uuid'.encode()].decode(),
+                    'service_name': info.name,
                     'service_type': info.properties['service_type'.encode()].decode(),
                 }
             except Exception as e:
