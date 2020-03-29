@@ -31,7 +31,7 @@ class MyListener:
                     'service_type': info.properties['service_type'.encode()].decode(),
                 }
             except Exception as e:
-                print("Error formatting API service info: {}".format(repr(e)), flush=True)
+                print("Error formatting API service info: {} : {}".format(repr(e), info), flush=True)
         if 'visiond-webrtc' in info.name:
             try:
                 serviceData = {
