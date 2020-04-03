@@ -5,7 +5,10 @@ import tornado.web
 import tornado.websocket
 import asyncio
 from tornado.options import define, options
-define("port", default=1234, help="Port to listen on", type=int)
+define("ws_port", default=6001, help="Non-encrypted port to listen on", type=int)
+define("wss_port", default=6002, help="Encrypted port to listen on", type=int)
+define("ssl_key", help="SSL key path", type=str)
+define("ssl_cert", help="SSL certificate path", type=str)
 from zeroconf import ServiceBrowser, Zeroconf
 
 class MyListener:
@@ -94,7 +97,7 @@ class ZeroConfHandler(tornado.websocket.WebSocketHandler):
     def send_data(cls, data):
         for waiter in cls.waiters:
             try:
-                print("sending message to {}: {}".format(waiter, data), flush=True)
+                print("Sending message to {}: {}".format(waiter, data), flush=True)
                 waiter.write_message(data)
             except Exception as e:
                 print("Error sending message: {}".format(repr(e)), flush=True)
@@ -105,9 +108,9 @@ class ZeroConfHandler(tornado.websocket.WebSocketHandler):
             cls.cache[data['name']] = data
             #if len(cls.cache) > cls.cache_size:
             #    cls.cache = cls.cache[-cls.cache_size :]
-            print("Data added to cache: {}".format(data), flush=True)
+            print(" - Data added to cache: {}".format(data), flush=True)
         except Exception as e:
-            print("Error adding to cache: {}".format(repr(e)), flush=True)
+            print(" - Error adding to cache: {}".format(repr(e)), flush=True)
 
     @classmethod
     def remove_cache(cls, data):
@@ -116,9 +119,22 @@ class ZeroConfHandler(tornado.websocket.WebSocketHandler):
 
 def main():
     # Setup tornado
+    print("Starting maverick-discovery", flush=True)
     tornado.options.parse_command_line()
-    app = Application()
-    app.listen(options.port)
+    discovery_app = Application()
+
+    print(f"Listening on non-encrypted port {options.ws_port}", flush=True)
+    ws_server = tornado.httpserver.HTTPServer(discovery_app)
+    ws_server.listen(int(options.ws_port), address='0.0.0.0')
+
+    options.ssl_cert = "/srv/maverick/data/security/ssl/web/mavweb.crt"
+    options.ssl_key = "/srv/maverick/data/security/ssl/web/mavweb.key"
+    if options.ssl_cert and options.ssl_key:
+        print(f"Listening on encrypted port {options.wss_port}", flush=True)
+        ssl_options = dict(certfile=options.ssl_cert, keyfile=options.ssl_key)
+        wss_server = tornado.httpserver.HTTPServer(discovery_app, ssl_options=ssl_options)
+        wss_server.listen(int(options.wss_port), address='0.0.0.0')
+
     tornado.ioloop.IOLoop.instance().start()
 
 
