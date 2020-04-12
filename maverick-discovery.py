@@ -35,6 +35,7 @@ class MyListener:
                     'uuid': info.properties['uuid'.encode()].decode(),
                     'service_name': info.name,
                     'service_type': info.properties['service_type'.encode()].decode(),
+                    'hostname': info.properties['hostname'.encode()].decode(),
                 }
             except Exception as e:
                 print("Error formatting API service info: {} : {}".format(repr(e), info), flush=True)
@@ -47,6 +48,7 @@ class MyListener:
                     'uuid': info.properties['uuid'.encode()].decode(),
                     'service_name': info.name,
                     'service_type': info.properties['service_type'.encode()].decode(),
+                    'hostname': info.properties['hostname'.encode()].decode(),
                 }
             except Exception as e:
                 print("Error formatting API service info: {}".format(repr(e)), flush=True)
