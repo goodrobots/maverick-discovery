@@ -51,7 +51,7 @@ class MyListener:
                     'hostname': info.properties['hostname'.encode()].decode(),
                 }
             except Exception as e:
-                print("Error formatting API service info: {}".format(repr(e)), flush=True)
+                print("Error formatting Visiond service info: {}".format(repr(e)), flush=True)
 
         if serviceData:
             ZeroConfHandler.send_data(serviceData)
