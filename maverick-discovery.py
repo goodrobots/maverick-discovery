@@ -31,7 +31,7 @@ class MyListener:
                     'wssEndpoint': info.properties['wssEndpoint'.encode()].decode() if 'wssEndpoint'.encode() in info.properties else None,
                     'schemaEndpoint': info.properties['schemaEndpoint'.encode()].decode(),
                     'schemasEndpoint': info.properties['schemasEndpoint'.encode()].decode() if 'schemasEndpoint'.encode() in info.properties else None,
-                    'websocketsOnly': info.properties['websocketsOnly'.encode()],
+                    'websocketsOnly': info.properties['websocketsOnly'.encode()].decode(),
                     'uuid': info.properties['uuid'.encode()].decode(),
                     'service_name': info.name,
                     'service_type': info.properties['service_type'.encode()].decode(),
